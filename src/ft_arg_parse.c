@@ -130,6 +130,35 @@ static int	check_required(const t_arg_parser *parser)
 	return (0);
 }
 
+static int	check_positionals(t_arg_parser *parser)
+{
+	size_t	i;
+	size_t	min_required;
+	int		has_variadic;
+
+	if (parser->positional_spec_count == 0)
+		return (0);
+	min_required = 0;
+	has_variadic = 0;
+	i = 0;
+	while (i < parser->positional_spec_count)
+	{
+		if (parser->positional_specs[i].flags & ARG_REQUIRED)
+			min_required++;
+		if (parser->positional_specs[i].flags & ARG_MULTIPLE)
+		{
+			has_variadic = 1;
+			break ;
+		}
+		i++;
+	}
+	if (parser->positional_count < min_required)
+		return (parser->error_msg = "Missing required positional argument", 1);
+	if (!has_variadic && parser->positional_count > parser->positional_spec_count)
+		return (parser->error_msg = "Too many positional arguments", 1);
+	return (0);
+}
+
 int	arg_parse(t_arg_parser *parser, int argc, char **argv)
 {
 	int		i;
@@ -168,5 +197,7 @@ int	arg_parse(t_arg_parser *parser, int argc, char **argv)
 		parser->error_spec = &parser->specs[required_index - 1];
 		return (1);
 	}
+	if (check_positionals(parser) != 0)
+		return (1);
 	return (0);
 }

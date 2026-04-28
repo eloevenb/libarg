@@ -57,3 +57,24 @@ int	arg_init(t_arg_parser *parser, const t_arg_spec *specs, size_t spec_count)
 	}
 	return (0);
 }
+
+int	arg_set_positional_specs(t_arg_parser *parser,
+		const t_positional_spec *specs, size_t spec_count,
+		const char *positionals_help)
+{
+	size_t	i;
+
+	if (!parser || (!specs && spec_count > 0))
+		return (1);
+	i = 0;
+	while (i < spec_count)
+	{
+		if ((specs[i].flags & ARG_MULTIPLE) && i + 1 < spec_count)
+			return (1);
+		i++;
+	}
+	parser->positional_specs = specs;
+	parser->positional_spec_count = spec_count;
+	parser->positionals_help = positionals_help;
+	return (0);
+}

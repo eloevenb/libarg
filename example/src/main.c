@@ -10,6 +10,11 @@ static const t_arg_spec	g_specs[] = {
 	{"host", 0, ARG_STRING, ARG_REQUIRED, "Target host", "HOST", NULL},
 };
 
+static const t_positional_spec	g_positional_specs[] = {
+	{"input", "Input file or host alias to process", ARG_REQUIRED},
+	{"extras", "Optional extra values", ARG_MULTIPLE},
+};
+
 static void	print_values(const t_arg_parser *parser)
 {
 	int			verbose;
@@ -52,6 +57,10 @@ int	main(int argc, char **argv)
 
 	if (arg_init(&parser, g_specs, sizeof(g_specs) / sizeof(g_specs[0])) != 0)
 		return (printf("arg_init failed\n"), 1);
+	if (arg_set_positional_specs(&parser, g_positional_specs,
+			sizeof(g_positional_specs) / sizeof(g_positional_specs[0]),
+			"Values consumed after all options") != 0)
+		return (printf("arg_set_positional_specs failed\n"), arg_free(&parser), 1);
 	if (arg_parse(&parser, argc, argv) != 0)
 	{
 		fprintf(stderr, "%s: %s", argv[0], parser.error_msg ? parser.error_msg : "unknown");

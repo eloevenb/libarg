@@ -65,3 +65,13 @@ int	arg_get_string_list(const t_arg_parser *parser, const char *name,
 	*count = item->count;
 	return (0);
 }
+
+int	arg_get_positionals(const t_arg_parser *parser,
+		const char ***out, size_t *count)
+{
+	if (!parser || !out || !count)
+		return (1);
+	*out = parser->positionals;
+	*count = parser->positional_count;
+	return (0);
+}

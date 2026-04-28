@@ -26,6 +26,12 @@ typedef struct  		s_arg_spec {
 	const char      	*default_str;   // optional, parse at init
 } t_arg_spec;
 
+typedef struct			s_positional_spec {
+	const char			*name;
+	const char			*help;
+	unsigned int		flags;		// uses t_arg_flags
+} t_positional_spec;
+
 typedef union   		s_arg_value {
 	int         		b;
 	long        		i;
@@ -45,6 +51,9 @@ typedef struct			s_arg_parser {
 	const t_arg_spec	*specs;
 	size_t				spec_count;
 	t_arg_item			*items;    // same length as specs
+	const t_positional_spec	*positional_specs;
+	size_t				positional_spec_count;
+	const char			*positionals_help;
 	const char			**positionals;
 	size_t				positional_count;
 	const char			*error_msg;
@@ -63,6 +72,21 @@ typedef struct			s_arg_parser {
 *	Returns 0 on success, 1 on failure.
 */
 int		arg_init(t_arg_parser *parser, const t_arg_spec *specs, size_t spec_count);
+
+/*
+*	Configures positional arguments metadata used for validation and help output.
+*
+*	Arguments:
+*	- parser (t_arg_parser *) should be initialized with arg_init.
+*	- specs (const t_positional_spec *) list of positional specs or NULL to clear.
+*	- spec_count (size_t) number of elements in specs.
+*	- positionals_help (const char *) optional section help for positionals.
+*
+*	Returns 0 on success, 1 on failure.
+*/
+int		arg_set_positional_specs(t_arg_parser *parser,
+			const t_positional_spec *specs, size_t spec_count,
+			const char *positionals_help);
 
 /*	
 *	Parses the command line arguments with the configured parser.
