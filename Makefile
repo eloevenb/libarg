@@ -4,7 +4,7 @@ SRC		=	$(addprefix src/, $(addsuffix .c, $(addprefix ft_, $(FUNC))))
 
 OBJS	=	$(SRC:.c=.o)
 
-CC		=	gcc
+CC		=	cc
 
 CFLAGS	=	-Wall -Wextra -Werror
 
