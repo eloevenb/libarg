@@ -56,6 +56,8 @@ typedef struct			s_arg_parser {
 	const char			*positionals_help;
 	const char			**positionals;
 	size_t				positional_count;
+	const char			**resolved_positionals;
+	size_t				resolved_positional_count;
 	const char			*error_msg;
 	const t_arg_spec	*error_spec;
 } t_arg_parser;
@@ -167,6 +169,10 @@ int		arg_get_string_list(const t_arg_parser *parser, const char *name,
 *	- parser (t_arg_parser *) should be initialized with arg_init.
 *	- out (const char ***) array of positional values.
 *	- count (size_t *) number of positional arguments.
+*
+*	When positional specs are configured without ARG_MULTIPLE, the returned
+*	array is spec-aligned. Optional omitted values are returned as NULL holes.
+*	In that case, count equals positional_spec_count.
 */
 int		arg_get_positionals(const t_arg_parser *parser,
 			const char ***out, size_t *count);

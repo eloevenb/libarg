@@ -71,6 +71,12 @@ int	arg_get_positionals(const t_arg_parser *parser,
 {
 	if (!parser || !out || !count)
 		return (1);
+	if (parser->resolved_positionals)
+	{
+		*out = parser->resolved_positionals;
+		*count = parser->resolved_positional_count;
+		return (0);
+	}
 	*out = parser->positionals;
 	*count = parser->positional_count;
 	return (0);

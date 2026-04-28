@@ -63,13 +63,23 @@ int	arg_set_positional_specs(t_arg_parser *parser,
 		const char *positionals_help)
 {
 	size_t	i;
+	int		seen_optional;
+	int		trailing_required_started;
 
 	if (!parser || (!specs && spec_count > 0))
 		return (1);
 	i = 0;
+	seen_optional = 0;
+	trailing_required_started = 0;
 	while (i < spec_count)
 	{
 		if ((specs[i].flags & ARG_MULTIPLE) && i + 1 < spec_count)
+			return (1);
+		if (!(specs[i].flags & ARG_REQUIRED))
+			seen_optional = 1;
+		else if (seen_optional)
+			trailing_required_started = 1;
+		if (trailing_required_started && !(specs[i].flags & ARG_REQUIRED))
 			return (1);
 		i++;
 	}

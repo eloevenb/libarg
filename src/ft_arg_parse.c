@@ -159,6 +159,73 @@ static int	check_positionals(t_arg_parser *parser)
 	return (0);
 }
 
+static size_t	count_trailing_required(const t_arg_parser *parser)
+{
+	size_t	count;
+	size_t	i;
+
+	count = 0;
+	i = parser->positional_spec_count;
+	while (i > 0)
+	{
+		if (!(parser->positional_specs[i - 1].flags & ARG_REQUIRED))
+			break ;
+		count++;
+		i--;
+	}
+	return (count);
+}
+
+static int	has_variadic_positional(const t_arg_parser *parser)
+{
+	size_t	i;
+
+	i = 0;
+	while (i < parser->positional_spec_count)
+	{
+		if (parser->positional_specs[i].flags & ARG_MULTIPLE)
+			return (1);
+		i++;
+	}
+	return (0);
+}
+
+static int	build_resolved_positionals(t_arg_parser *parser)
+{
+	size_t	trailing_required_count;
+	size_t	prefix_value_count;
+	size_t	i;
+
+	free((void *)parser->resolved_positionals);
+	parser->resolved_positionals = NULL;
+	parser->resolved_positional_count = 0;
+	if (!parser->positional_specs || parser->positional_spec_count == 0)
+		return (0);
+	if (has_variadic_positional(parser))
+		return (0);
+	parser->resolved_positionals = calloc(parser->positional_spec_count,
+			sizeof(char *));
+	if (!parser->resolved_positionals)
+		return (1);
+	parser->resolved_positional_count = parser->positional_spec_count;
+	trailing_required_count = count_trailing_required(parser);
+	prefix_value_count = parser->positional_count - trailing_required_count;
+	i = 0;
+	while (i < prefix_value_count)
+	{
+		parser->resolved_positionals[i] = parser->positionals[i];
+		i++;
+	}
+	i = 0;
+	while (i < trailing_required_count)
+	{
+		parser->resolved_positionals[parser->positional_spec_count
+			- trailing_required_count + i] = parser->positionals[prefix_value_count + i];
+		i++;
+	}
+	return (0);
+}
+
 int	arg_parse(t_arg_parser *parser, int argc, char **argv)
 {
 	int		i;
@@ -199,5 +266,7 @@ int	arg_parse(t_arg_parser *parser, int argc, char **argv)
 	}
 	if (check_positionals(parser) != 0)
 		return (1);
+	if (build_resolved_positionals(parser) != 0)
+		return (parser->error_msg = "Out of memory", 1);
 	return (0);
 }

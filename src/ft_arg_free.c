@@ -31,5 +31,6 @@ void	arg_free(t_arg_parser *parser)
 	}
 	free(parser->items);
 	free((void *)parser->positionals);
+	free((void *)parser->resolved_positionals);
 	ft_bzero((char *)parser, sizeof(*parser));
 }

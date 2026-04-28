@@ -5,46 +5,50 @@
 static const t_arg_spec	g_specs[] = {
 	{"help", 'h', ARG_BOOL, 0, "Print this help message", NULL, NULL},
 	{"verbose", 'v', ARG_BOOL, 0, "Enable verbose output", NULL, NULL},
-	{"port", 'p', ARG_INT, ARG_REQUIRED, "Target port", "PORT", NULL},
-	{"timeout", 't', ARG_FLOAT, 0, "Timeout in seconds", "SECONDS", "3.5"},
-	{"host", 0, ARG_STRING, ARG_REQUIRED, "Target host", "HOST", NULL},
+	{"intercept", 'i', ARG_BOOL, 0, "Enable intercept mode", NULL, NULL},
+	{"interval", 't', ARG_FLOAT, 0, "Poisoning interval in seconds", "SECONDS",
+		"2.0"},
+	{"iface", 'I', ARG_STRING, 0, "Interface name override", "IFACE", NULL},
 };
 
 static const t_positional_spec	g_positional_specs[] = {
-	{"input", "Input file or host alias to process", ARG_REQUIRED},
-	{"extras", "Optional extra values", ARG_MULTIPLE},
+	{"source_ip", "IPv4 address of sender to impersonate", ARG_REQUIRED},
+	{"source_mac", "Sender hardware address", ARG_REQUIRED},
+	{"target_ip", "IPv4 address of target host", ARG_REQUIRED},
+	{"target_mac", "Target hardware address (required in intercept mode)", 0},
+	{"spoofed_mac", "MAC used for spoof ownership", ARG_REQUIRED},
 };
 
 static void	print_values(const t_arg_parser *parser)
 {
 	int			verbose;
-	long		port;
-	double		timeout;
-	const char	*host;
+	int			intercept;
+	double		interval;
+	const char	*iface;
 	const char	**positionals;
 	size_t		positional_count;
 	size_t		i;
 
 	if (arg_get_bool(parser, "verbose", &verbose) != 0
-		|| arg_get_int(parser, "port", &port) != 0
-		|| arg_get_float(parser, "timeout", &timeout) != 0
-		|| arg_get_string(parser, "host", &host) != 0
+		|| arg_get_bool(parser, "intercept", &intercept) != 0
+		|| arg_get_float(parser, "interval", &interval) != 0
+		|| arg_get_string(parser, "iface", &iface) != 0
 		|| arg_get_positionals(parser, &positionals, &positional_count) != 0)
 	{
 		printf("Failed to retrieve parsed values.\n");
 		return ;
 	}
 	printf("verbose : %s\n", verbose ? "true" : "false");
-	printf("port    : %ld\n", port);
-	printf("timeout : %.2f\n", timeout);
-	printf("host    : %s\n", host);
+	printf("intercept: %s\n", intercept ? "true" : "false");
+	printf("interval : %.2f\n", interval);
+	printf("iface    : %s\n", iface ? iface : "(default)");
 	if (positional_count > 0)
 	{
 		printf("positionals (%zu):\n", positional_count);
 		i = 0;
 		while (i < positional_count)
 		{
-			printf("  - %s\n", positionals[i]);
+			printf("  - %s\n", positionals[i] ? positionals[i] : "(null)");
 			i++;
 		}
 	}
