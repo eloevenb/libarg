@@ -137,6 +137,17 @@ int		arg_get_string_list(const t_arg_parser *parser, const char *name,
 			const char ***out, size_t *count);
 
 /*
+*	Gets all positional arguments collected during parsing.
+*
+*	Arguments:
+*	- parser (t_arg_parser *) should be initialized with arg_init.
+*	- out (const char ***) array of positional values.
+*	- count (size_t *) number of positional arguments.
+*/
+int		arg_get_positionals(const t_arg_parser *parser,
+			const char ***out, size_t *count);
+
+/*
 *	Prints the help message for the parser.
 *	
 *	Arguments:

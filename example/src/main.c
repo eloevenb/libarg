@@ -16,12 +16,15 @@ static void	print_values(const t_arg_parser *parser)
 	long		port;
 	double		timeout;
 	const char	*host;
+	const char	**positionals;
+	size_t		positional_count;
 	size_t		i;
 
 	if (arg_get_bool(parser, "verbose", &verbose) != 0
 		|| arg_get_int(parser, "port", &port) != 0
 		|| arg_get_float(parser, "timeout", &timeout) != 0
-		|| arg_get_string(parser, "host", &host) != 0)
+		|| arg_get_string(parser, "host", &host) != 0
+		|| arg_get_positionals(parser, &positionals, &positional_count) != 0)
 	{
 		printf("Failed to retrieve parsed values.\n");
 		return ;
@@ -30,13 +33,13 @@ static void	print_values(const t_arg_parser *parser)
 	printf("port    : %ld\n", port);
 	printf("timeout : %.2f\n", timeout);
 	printf("host    : %s\n", host);
-	if (parser->positional_count > 0)
+	if (positional_count > 0)
 	{
-		printf("positionals (%zu):\n", parser->positional_count);
+		printf("positionals (%zu):\n", positional_count);
 		i = 0;
-		while (i < parser->positional_count)
+		while (i < positional_count)
 		{
-			printf("  - %s\n", parser->positionals[i]);
+			printf("  - %s\n", positionals[i]);
 			i++;
 		}
 	}
